@@ -3,6 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Assignment from '@material-ui/icons/Assignment'
 import axios from 'axios';
 
 export default class Homepage extends React.Component {
@@ -19,7 +20,7 @@ export default class Homepage extends React.Component {
     }
 
     handleURL = (e) => {
-        this.setState({url: e.target.value});
+        this.setState({url: e.target.value, gotAnswer:false});
         if (this.state.url.trim() === "") {
             this.setState({
                 error: "Insert an URL and we'll provide you a shorter link that you can use to redirect to the target website.",
@@ -34,7 +35,8 @@ export default class Homepage extends React.Component {
             axios.post('http://localhost:10000/link', {
                 url: homepage.state.url,
             }).then(function (response) {
-                homepage.setState({ answer: response.data['hash'], gotError: false, gotAnswer: true, error: "" });
+                homepage.setState({
+                    answer: response.data['hash'], gotError: false, gotAnswer: true, error: "Insert an URL and we'll provide you a shorter link that you can use to redirect to the target website." });
                 console.log(homepage.state.answer);
             }).catch(function (error) {
                 console.log(error);
@@ -46,10 +48,21 @@ export default class Homepage extends React.Component {
         e.preventDefault()
     }
 
+    handleClipboard = (e) => {
+        var tempInput = document.createElement("input");
+        tempInput.value = "tw-url.com/"+this.state.answer;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+    }
+
     render() {
         const gotAnswer = this.state.gotAnswer;
+        const answer = this.state.answer;
+        const url = this.state.url;
         const gotError = this.state.gotError;
-        const Error = this.state.error
+        const Error = this.state.error;
         return (
             <Grid
                 container
@@ -58,7 +71,7 @@ export default class Homepage extends React.Component {
                 alignItems="center"
                 style= {{height:"80vh"}}
             >
-                <Grid item style={{ width: "50%" }}>
+                <Grid item style={{ width: "60%" }}>
                     <Paper elevation={10} style={{ textAlign: "center", paddingRight: "20px" }}>
                         <h2 style={{ paddingTop:'7px', background: '-webkit-linear-gradient(#e66465, #9198e5)', WebkitBackgroundClip: 'text', WebkitTextFillColor:'transparent'}}>
                             Tw-url.com
@@ -75,22 +88,43 @@ export default class Homepage extends React.Component {
                                 style={{margin:'10px'}}
                                 onChange={this.handleURL}
                             />
-                            <Button variant="contained" color="primary" style={{margin:'10px'}} type='submit'>
+                            <Button variant="contained" color="primary" style={{margin:'10px'}} type='submit' size="large">
                                 Let's go!
                             </Button>
                         </form>
                         <br/>
                         {gotAnswer && 
-                            <TextField
-                            id="answer"
-                            label="Shortened URL:"
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                            fullWidth
-                            style={{ margin: '10px' }} 
-                            />
-                    
+                            <Grid container 
+                                direction="row"
+                                justify="space-around"
+                                alignItems="center"
+                                style={{paddingBottom:"10px"}}>
+                            <Grid item xs={12} sm={7}>
+                                <TextField
+                                id="answer"
+                                label="Shortened URL:"
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                                fullWidth
+                                style={{ margin: '10px' }} 
+                                value={"tw-url.com/"+answer}
+                                helperText={"From " + url.length + " characters to " + ("tw-url.com/" + answer).length + " characters."}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={4}>
+                                <Button
+                                    variant="contained"
+                                    aria-label="Copy to Clipboard"
+                                    onClick={this.handleClipboard}
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<Assignment />}
+                                >
+                                    Copy To Clipboard
+                                </Button>
+                            </Grid>
+                        </Grid>
                         }
                     </Paper>
                 </Grid>
