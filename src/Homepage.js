@@ -3,7 +3,8 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Assignment from '@material-ui/icons/Assignment'
+import Assignment from '@material-ui/icons/Assignment';
+import Collapse from '@material-ui/core/Collapse';
 import axios from 'axios';
 
 export default class Homepage extends React.Component {
@@ -72,7 +73,7 @@ export default class Homepage extends React.Component {
                 style= {{height:"80vh"}}
             >
                 <Grid item style={{ width: "60%" }}>
-                    <Paper elevation={10} style={{ textAlign: "center", paddingRight: "20px" }}>
+                    <Paper elevation={10} style={{ textAlign: "center", paddingRight: "20px", borderRadius:"20px" }}>
                         <h2 style={{ paddingTop:'7px', background: '-webkit-linear-gradient(#e66465, #9198e5)', WebkitBackgroundClip: 'text', WebkitTextFillColor:'transparent'}}>
                             Tw-url.com
                         </h2>
@@ -83,6 +84,7 @@ export default class Homepage extends React.Component {
                                 autoFocus
                                 label="Shorten this URL!"
                                 helperText={Error}
+                                defaultValue={url}
                                 variant="outlined"
                                 fullWidth
                                 style={{margin:'10px'}}
@@ -93,7 +95,8 @@ export default class Homepage extends React.Component {
                             </Button>
                         </form>
                         <br/>
-                        {gotAnswer && 
+                        
+                            <Collapse in={gotAnswer}>
                             <Grid container 
                                 direction="row"
                                 justify="space-around"
@@ -125,7 +128,8 @@ export default class Homepage extends React.Component {
                                 </Button>
                             </Grid>
                         </Grid>
-                        }
+                        </Collapse>
+                        
                     </Paper>
                 </Grid>
             </Grid>
