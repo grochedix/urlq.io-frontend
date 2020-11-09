@@ -37,7 +37,7 @@ export default class Homepage extends React.Component {
                 url: homepage.state.url,
             }).then(function (response) {
                 homepage.setState({
-                    answer: response.data['hash'], gotError: false, gotAnswer: true, error: "Insert an URL and we'll provide you a shorter link that you can use to redirect to the target website." });
+                    answer: "https://urlq.io/" + response.data['hash'], gotError: false, gotAnswer: true, error: "Insert an URL and we'll provide you a shorter link that you can use to redirect to the target website." });
                 console.log(homepage.state.answer);
             }).catch(function (error) {
                 console.log(error);
@@ -75,7 +75,7 @@ export default class Homepage extends React.Component {
                 <Grid item style={{ width: "60%" }}>
                     <Paper elevation={10} style={{ textAlign: "center", paddingRight: "20px", borderRadius:"20px" }}>
                         <h2 style={{ paddingTop:'7px', background: '-webkit-linear-gradient(#e66465, #9198e5)', WebkitBackgroundClip: 'text', WebkitTextFillColor:'transparent'}}>
-                            Tw-url.com
+                            urlq.io
                         </h2>
                         <form onSubmit={this.handleSubmit}>
                             <TextField
@@ -111,8 +111,8 @@ export default class Homepage extends React.Component {
                                 }}
                                 fullWidth
                                 style={{ margin: '10px' }} 
-                                value={"tw-url.com/"+answer}
-                                helperText={"From " + url.length + " characters to " + ("tw-url.com/" + answer).length + " characters."}
+                                value={answer}
+                                helperText={"From " + url.length + " characters to " + answer.length + " characters."}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={4}>

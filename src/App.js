@@ -15,7 +15,7 @@ function App() {
           <Route path="/:hash(-?[0-9a-z]+)">
             <HashRedirect/>
           </Route>
-          <Route path="/" exact>
+          <Route path="/">
             <Homepage />
           </Route>
         </Switch>
