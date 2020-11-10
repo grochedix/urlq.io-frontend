@@ -12,7 +12,7 @@ function App() {
     <div className="App" style={{height:"100vh"}}>
       <Router>
         <Switch>
-          <Route path="/:hash(-?[0-9a-z]+)">
+          <Route path="/:hash(-?[0-9a-zA-Z]+)">
             <HashRedirect/>
           </Route>
           <Route path="/">

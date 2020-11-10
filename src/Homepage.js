@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Assignment from '@material-ui/icons/Assignment';
 import Collapse from '@material-ui/core/Collapse';
+import Grow from '@material-ui/core/Grow';
 import axios from 'axios';
 
 export default class Homepage extends React.Component {
@@ -15,8 +16,9 @@ export default class Homepage extends React.Component {
             gotAnswer: false,
             answer: "",
             gotError:false,
-            error: "Insert an URL and we'll provide you a shorter link that you can use to redirect to the target website.",
+            error: "Insert an URL and we'll provide you a shorter link, as well as a QR code that you can use to redirect to the target website.",
             url:"",
+            qrcode:null,
         };
     }
 
@@ -24,7 +26,7 @@ export default class Homepage extends React.Component {
         this.setState({url: e.target.value, gotAnswer:false});
         if (this.state.url.trim() === "") {
             this.setState({
-                error: "Insert an URL and we'll provide you a shorter link that you can use to redirect to the target website.",
+                error: "Insert an URL and we'll provide you a shorter link, as well as a QR code that you can use to redirect to the target website.",
                 gotError: false
             });
         }
@@ -33,12 +35,25 @@ export default class Homepage extends React.Component {
     handleSubmit = (e) => {
         const homepage = this
         if (this.state.url.includes(".") && this.state.url.trim().length > 3){
-            axios.post('http://localhost:10000/link', {
+            axios.post('http://localhost:10000/link/', {
                 url: homepage.state.url,
             }).then(function (response) {
                 homepage.setState({
-                    answer: "https://urlq.io/" + response.data['hash'], gotError: false, gotAnswer: true, error: "Insert an URL and we'll provide you a shorter link that you can use to redirect to the target website." });
-                console.log(homepage.state.answer);
+                    qrcode: null, answer: "https://urlq.io/" + response.data['hash'], gotError: false, error: "Insert an URL and we'll provide you a shorter link, as well as a QR code that you can use to redirect to the target website." })
+                console.log('http://localhost:10000/image/' + response.data['hash'])
+                axios
+                    .get(
+                        'http://localhost:10000/image/' + response.data['hash'],
+                        { responseType: 'arraybuffer' },
+                ).then(response2 => {
+                    const base64 = btoa(
+                        new Uint8Array(response2.data).reduce(
+                            (data, byte) => data + String.fromCharCode(byte),
+                            '',
+                        ),
+                    );
+                    homepage.setState({ qrcode: "data:image/png;base64," + base64, gotAnswer: true, });
+                });
             }).catch(function (error) {
                 console.log(error);
                 homepage.setState({ gotAnswer: false, error: "A network problem occured.", gotError: true });
@@ -58,6 +73,11 @@ export default class Homepage extends React.Component {
         document.body.removeChild(tempInput);
     }
 
+    debugBase64= (e) => {
+        var win = window.open();
+        win.document.write('<img src="' + this.state.qrcode + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px;" allowfullscreen></img>');
+    }
+
     render() {
         const gotAnswer = this.state.gotAnswer;
         const answer = this.state.answer;
@@ -70,12 +90,12 @@ export default class Homepage extends React.Component {
                 direction="row"
                 justify="center"
                 alignItems="center"
-                style= {{height:"80vh"}}
+                style= {{height:"100vh"}}
             >
-                <Grid item style={{ width: "60%" }}>
+                <Grid item style={{ width: "70%" }}>
                     <Paper elevation={10} style={{ textAlign: "center", paddingRight: "20px", borderRadius:"20px" }}>
-                        <h2 style={{ paddingTop:'7px', background: '-webkit-linear-gradient(#e66465, #9198e5)', WebkitBackgroundClip: 'text', WebkitTextFillColor:'transparent'}}>
-                            urlq.io
+                        <h2 style={{ paddingTop: '10px', background: '-webkit-linear-gradient(#080808, #9198e5)', WebkitBackgroundClip: 'text', WebkitTextFillColor:'transparent'}}>
+                            urlq.io : URLs shortener & QR codes generator
                         </h2>
                         <form onSubmit={this.handleSubmit}>
                             <TextField
@@ -95,41 +115,50 @@ export default class Homepage extends React.Component {
                             </Button>
                         </form>
                         <br/>
-                        
-                            <Collapse in={gotAnswer}>
+                    
+                        <Collapse in={gotAnswer}>
                             <Grid container 
                                 direction="row"
                                 justify="space-around"
                                 alignItems="center"
                                 style={{paddingBottom:"10px"}}>
-                            <Grid item xs={12} sm={7}>
-                                <TextField
-                                id="answer"
-                                label="Shortened URL:"
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                                fullWidth
-                                style={{ margin: '10px' }} 
-                                value={answer}
-                                helperText={"From " + url.length + " characters to " + answer.length + " characters."}
-                                />
+                                <Grid item xs={12} sm={5}>
+                                    <TextField
+                                    id="answer"
+                                    label="Shortened URL:"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                    fullWidth
+                                    style={{ margin: '10px', marginLeft: '25px' }} 
+                                    value={answer}
+                                    helperText={"From " + url.length + " characters to " + answer.length + " characters."}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                    <Button
+                                        variant="contained"
+                                        aria-label="Copy to Clipboard"
+                                        onClick={this.handleClipboard}
+                                        color="primary"
+                                        size="small"
+                                        startIcon={<Assignment />}
+                                    >
+                                        Link To Clipboard
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={12} sm={8}>
+                                    <figure>
+                                    <a href='#' onClick={this.debugBase64}>
+                                        <img src={this.state.qrcode} alt="QR Code" style={{maxWidth:'60%'}}/>
+                                    </a>
+                                    <Grow in={gotAnswer} {...(gotAnswer ? { timeout: 1400 } : {})}>
+                                            <figcaption>You can save this QR code as an image!</figcaption>
+                                    </Grow>
+                                    </figure>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <Button
-                                    variant="contained"
-                                    aria-label="Copy to Clipboard"
-                                    onClick={this.handleClipboard}
-                                    color="primary"
-                                    size="small"
-                                    startIcon={<Assignment />}
-                                >
-                                    Copy To Clipboard
-                                </Button>
-                            </Grid>
-                        </Grid>
                         </Collapse>
-                        
                     </Paper>
                 </Grid>
             </Grid>

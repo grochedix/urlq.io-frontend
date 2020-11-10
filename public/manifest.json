@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "urlq.io",
+  "name": "urlq.io: urls shortener & QR codes generator",
   "icons": [
     {
       "src": "favicon.ico",
