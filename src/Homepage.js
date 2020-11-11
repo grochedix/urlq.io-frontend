@@ -85,10 +85,10 @@ export default class Homepage extends React.Component {
 
     componentWillMount() {
         if (!this.state.gotLastLink) {
-            this.state.lastLink = localStorage.getItem('lastLink');
-            if (this.state.lastLink !== "") {
-                this.state.gotLastLink = true
-            }
+            this.setState({lastLink:localStorage.getItem('lastLink')}, () =>
+            {if (this.state.lastLink !== "") {
+                this.setState({ gotLastLink: true });
+            }})
         }
     }
 
@@ -179,7 +179,7 @@ export default class Homepage extends React.Component {
                         <Divider />
                             <Grow in={this.state.gotLastLink} {...({timeout:2000})}>
                             <h4 style={{ paddingBottom: '2%', color: '#3f51b5' }}>  
-                                Last shortened link :  <a href={this.state.lastLink} target='_blank'>{this.state.lastLink} </a>
+                                Last shortened link :  <a href={this.state.lastLink} target='_blank' rel="noreferrer">{this.state.lastLink} </a>
                             </h4>
                          </Grow>
                     </Paper>
