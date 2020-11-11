@@ -38,7 +38,7 @@ export default class Homepage extends React.Component {
     handleSubmit = (e) => {
         const homepage = this
         if (this.state.url.includes(".") && this.state.url.trim().length > 3){
-            axios.post('http://localhost:10000/link/', {
+            axios.post('http://35.180.41.225:10000/link/', {
                 url: homepage.state.url,
             }).then(function (response) {
                 homepage.setState({
@@ -48,7 +48,7 @@ export default class Homepage extends React.Component {
                 localStorage.setItem('lastLink', "https://urlq.io/" + response.data['hash']);
                 axios
                     .get(
-                        'http://localhost:10000/image/' + response.data['hash'],
+                        'http://35.180.41.225:10000/image/' + response.data['hash'],
                         { responseType: 'arraybuffer' },
                 ).then(response2 => {
                     const base64 = btoa(
