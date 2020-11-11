@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import Assignment from '@material-ui/icons/Assignment';
 import Collapse from '@material-ui/core/Collapse';
 import Grow from '@material-ui/core/Grow';
+import Divider from '@material-ui/core/Divider'
 import axios from 'axios';
 
 export default class Homepage extends React.Component {
@@ -18,6 +19,8 @@ export default class Homepage extends React.Component {
             gotError:false,
             error: "Insert an URL and we'll provide you a shorter link, as well as a QR code that you can use to redirect to the target website.",
             url:"",
+            lastLink:"",
+            gotLastLink:false,
             qrcode:null,
         };
     }
@@ -39,8 +42,10 @@ export default class Homepage extends React.Component {
                 url: homepage.state.url,
             }).then(function (response) {
                 homepage.setState({
-                    qrcode: null, answer: "https://urlq.io/" + response.data['hash'], gotError: false, error: "Insert an URL and we'll provide you a shorter link, as well as a QR code that you can use to redirect to the target website." })
-                console.log('http://localhost:10000/image/' + response.data['hash'])
+                    qrcode: null, answer: "https://urlq.io/" + response.data['hash'],
+                    lastLink: "https://urlq.io/" + response.data['hash'],
+                    gotError: false, error: "Insert an URL and we'll provide you a shorter link, as well as a QR code that you can use to redirect to the target website." });
+                localStorage.setItem('lastLink', "https://urlq.io/" + response.data['hash']);
                 axios
                     .get(
                         'http://localhost:10000/image/' + response.data['hash'],
@@ -73,10 +78,21 @@ export default class Homepage extends React.Component {
         document.body.removeChild(tempInput);
     }
 
-    debugBase64= (e) => {
+    debugBase64 = (e) => {
         var win = window.open();
         win.document.write('<img src="' + this.state.qrcode + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px;" allowfullscreen></img>');
     }
+
+    componentWillMount() {
+        if (!this.state.gotLastLink) {
+            this.state.lastLink = localStorage.getItem('lastLink');
+            if (this.state.lastLink !== "") {
+                this.state.gotLastLink = true
+            }
+        }
+    }
+
+    
 
     render() {
         const gotAnswer = this.state.gotAnswer;
@@ -95,8 +111,9 @@ export default class Homepage extends React.Component {
                 <Grid item style={{ width: "70%" }}>
                     <Paper elevation={10} style={{ textAlign: "center", paddingRight: "20px", borderRadius:"20px" }}>
                         <h2 style={{ paddingTop: '10px', background: '-webkit-linear-gradient(#080808, #9198e5)', WebkitBackgroundClip: 'text', WebkitTextFillColor:'transparent'}}>
-                            urlq.io : URLs shortener & QR codes generator
+                            <u> urlq.io : URLs shortener & QR codes generator</u>
                         </h2>
+                        
                         <form onSubmit={this.handleSubmit}>
                             <TextField
                                 error={gotError}
@@ -119,7 +136,7 @@ export default class Homepage extends React.Component {
                         <Collapse in={gotAnswer}>
                             <Grid container 
                                 direction="row"
-                                justify="space-around"
+                                justify="center"
                                 alignItems="center"
                                 style={{paddingBottom:"10px"}}>
                                 <Grid item xs={12} sm={5}>
@@ -159,6 +176,12 @@ export default class Homepage extends React.Component {
                                 </Grid>
                             </Grid>
                         </Collapse>
+                        <Divider />
+                            <Grow in={this.state.gotLastLink} {...({timeout:2000})}>
+                            <h4 style={{ paddingBottom: '2%', color: '#3f51b5' }}>  
+                                Last shortened link :  <a href={this.state.lastLink} target='_blank'>{this.state.lastLink} </a>
+                            </h4>
+                         </Grow>
                     </Paper>
                 </Grid>
             </Grid>
