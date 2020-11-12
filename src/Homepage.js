@@ -71,7 +71,7 @@ export default class Homepage extends React.Component {
 
     handleClipboard = (e) => {
         var tempInput = document.createElement("input");
-        tempInput.value = "tw-url.com/"+this.state.answer;
+        tempInput.value = this.state.answer;
         document.body.appendChild(tempInput);
         tempInput.select();
         document.execCommand("copy");
