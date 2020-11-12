@@ -18,7 +18,7 @@ class HashRedirect extends React.Component {
 
     getRedirect = (hash) => {
         const obj = this
-        axios.get("http://35.180.41.225:10000/link/" + hash).then(function (response) {
+        axios.get("http://15.236.92.203:10000/link/" + hash).then(function (response) {
             obj.setState({
                 url: response.data["url"],
                 gotError: false,
