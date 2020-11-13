@@ -18,7 +18,7 @@ class HashRedirect extends React.Component {
 
     getRedirect = (hash) => {
         const obj = this
-        axios.get("http://urlq.io:10000/link/" + hash).then(function (response) {
+        axios.get("https://apiurlq.link/link/" + hash).then(function (response) {
             obj.setState({
                 url: response.data["url"],
                 gotError: false,
@@ -49,7 +49,7 @@ class HashRedirect extends React.Component {
                 {this.state.gotError &&
                     <h1>
                         HTTP404 <br/>
-                        It looks like the page you requested does not exist (<a href="http://localhost:3000/">yet</a>) ! 
+                        It looks like the page you requested does not exist (<a href="https://urlq.io/">yet</a>) ! 
                     </h1>
                 }
                 
