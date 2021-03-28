@@ -86,7 +86,7 @@ export default class Homepage extends React.Component {
     componentWillMount() {
         if (!this.state.gotLastLink) {
             this.setState({lastLink:localStorage.getItem('lastLink')}, () =>
-            {if (this.state.lastLink !== "") {
+            { if (this.state.lastLink !== "" && this.state.lastLink !== null) {
                 this.setState({ gotLastLink: true });
             }})
         }
